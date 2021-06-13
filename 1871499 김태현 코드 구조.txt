@@ -1,4 +1,4 @@
-public class cshChickGenerator : MonoBehaviour
+public class cshChickGenerator : MonoBehaviour 
 {
     public GameObject obj; //ChickBallPrefab 설정
     public GameObject obj2; //ChickBallPrefab 설정
