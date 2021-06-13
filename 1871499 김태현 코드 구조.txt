@@ -1,0 +1,609 @@
+public class cshChickGenerator : MonoBehaviour
+{
+    public GameObject obj; //ChickBallPrefab 설정
+    public GameObject obj2; //ChickBallPrefab 설정
+    public float interval = 3.0f; //다음에 함수가 호출될 인터벌
+   
+
+    void Start()
+    {
+
+       
+        //SpawnObj함수를 게임이 실행된 0.5초 후에 호출, 이후 interval초 마다 호출 된다.
+       
+            InvokeRepeating("SpawnObj", 0.5f, interval);
+        
+       
+    }
+
+    //SpawnObj함수는 ChickBallPrefab을 생성한다.
+    void SpawnObj()
+    {
+        int rnd = Random.Range(0, 2);
+        if (rnd  < 1)
+        {
+            Instantiate(obj, transform.position, transform.rotation);
+            
+        }
+        else
+        {
+            Instantiate(obj2, transform.position, transform.rotation);
+            
+        }
+      
+    }
+
+    
+}
+
+
+
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+
+
+public class cshTimerTrigger : MonoBehaviour
+{
+    private float fDestroyTime = 5f; private float fTickTime;
+//5초 뒤에 삭제됨
+    public Text textbox3; 
+    public Text textbox2; // 설명을 나타내는 Text UI
+    public float realEvent = 1; //상황별 번호
+    private GameObject beltL, beltR; // 안전벨트를 게임오브젝트로 불러온다
+    public float deleteTime = 2.0f; // 2초 뒤 삭제됨
+
+    private void OnCollisionEnter(Collision collision)
+    {
+
+        /*   if (collision.gameObject.tag == "belt") 
+           {
+            cshTimerTrigger realEvent = GameObject.Find("genMask").GetComponent<cshTimerTrigger>();
+            realEvent.realEvent = 2;//Destroy(collision.gameObject);
+
+        }
+        if (collision.gameObject.tag == "Enemy")
+        {
+            cshTimerTrigger realEvent = GameObject.Find("genMask").GetComponent<cshTimerTrigger>();
+            realEvent.realEvent = 2;//Destroy(collision.gameObject);
+
+        }*/
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("belt")) // 벨트가 트리거로 만나면 genMask 라는 element의 cshTimerTrigger 스크립트의 변수 중 realEvent를 찾아 2로 바꿔준다. 게임오브젝트를 삭제한다.
+        {
+            cshTimerTrigger realEvent = GameObject.Find("genMask").GetComponent<cshTimerTrigger>();
+            realEvent.realEvent = 2;// Destroy(other.gameObject);
+            Destroy(gameObject);
+            // Destroy(gameObject, deleteTime);
+
+        }
+        if (other.CompareTag("Enemy")) // 에너미 태그를 가진 오브젝트가 서로 만나면 genAccess라는 element의 cshTimerTrigger 스크립트의 변수 중 realEvent를 찾아 3으로 바꿔준다. 게임오브젝트를 삭제한다.
+        {
+            cshTimerTrigger realEvent = GameObject.Find("genAccess").GetComponent<cshTimerTrigger>();
+            realEvent.realEvent = 3;// Destroy(other.gameObject);
+            Destroy(gameObject);// Destroy(gameObject, deleteTime);
+
+        }
+        if (other.CompareTag("acces")) // acces 태그를 만나면 genAccess의 realEvent 변수가 4로 바뀌고 오브젝트 삭제
+        {
+            cshTimerTrigger realEvent = GameObject.Find("genAccess").GetComponent<cshTimerTrigger>();
+            realEvent.realEvent = 4; Destroy(other.gameObject);
+            //Destroy(gameObject, deleteTime);
+
+
+
+        }
+        if (other.CompareTag("fivesecond")) 
+        {
+            // cshTimerTrigger realEvent = GameObject.Find("genAccess").GetComponent<cshTimerTrigger>();
+            //realEvent.realEvent = 4;//Destroy(other.gameObject);
+            Invoke("Escape3", 5.0f); // 5초 뒤에 Escape3이라는 함수를 실행한다.
+
+
+        }
+        if (other.CompareTag("ct"))
+        {
+
+
+            cshTimerTrigger realEvent = GameObject.Find("genAccess").GetComponent<cshTimerTrigger>();
+            realEvent.realEvent = 9;
+           // Destroy(other.gameObject); //realEvent 가 9로 변한다.
+        }
+
+            if (other.CompareTag("escape"))
+            {
+             
+              
+                //Destroy(other.gameObject);
+            }
+
+
+
+            /*
+               if (other.gameObject.tag == "belt")
+               {
+                cshTimerTrigger realEvent = GameObject.Find("genMask").GetComponent<cshTimerTrigger>();
+                realEvent.realEvent = 2;
+                 Destroy(other.gameObject);
+               } */
+       
+    }
+
+    /* private void OnTriggerExit(Collider collision)
+     {
+         if (collision.CompareTag("BreakableObject") || collision.CompareTag("Enemy"))
+         {
+             colliders.Remove(collision);
+         }
+     } */
+    // Start is called before the first frame update
+
+    public GameObject obj, obj2, obj3; // 생성되는 오브젝트들
+    public float interval = 60.0f; //다음에 함수가 호출될 인터벌  
+
+
+    void Start()
+    {
+        //   Destroy(gameObject, fDestroyTime);
+
+        cshMoveLimit realEvent = GameObject.Find("OVRPlayerController").GetComponent<cshMoveLimit>();  //OVRPlayerController의 cshMoveLimit 스크립트에서 변수를 바꿔준다.
+        realEvent.realEvent = 1;
+
+        
+
+    }
+
+
+
+
+    private void Update()
+    {
+      
+
+        //Player 이동 (이동 범위를 movableRange로 제한)
+        transform.Translate(Input.GetAxisRaw("Horizontal") * speed * Time.deltaTime, 0, 0);
+        transform.position
+        = new Vector2(Mathf.Clamp(transform.position.x, -moveableRange, moveableRange), transform.position.y);
+
+       
+
+        //  Mathf.Round(timestart).ToString()
+
+
+ 
+        if (realEvent == 2) { textbox2.text = "사고 발생, 마스크 착용"; InvokeRepeating("SpawnObj", 0.1f, interval);
+            realEvent = 2.5f;
+          // realEvent 변수가 2이면 설명 text ui가 바뀌고 SpawnObj 함수가 실행된다. 그리고 realEvent 변수가 2.5로 바뀐다. 
+        }
+
+        if (realEvent == 3) { textbox2.text = "장신구를 벗어야 합니다."; InvokeRepeating("SpawnObj2", 0.1f, interval); realEvent = 3.5f; }
+        if (realEvent == 4) {   textbox2.text = "충격을 대비해 천천히 몸을 웅크리세요"; InvokeRepeating("SpawnObj3", 5f, interval); realEvent = 4.5f; } // 각 함수들을 실행
+        if (realEvent == 6) { textbox2.text = " "; }
+        if (realEvent == 7) { textbox2.text = " "; }
+        if (realEvent == 8) { 
+            textbox2.text = "화살표를 따라 신속히 이동하기";  
+            fTickTime += Time.deltaTime;
+            if (fTickTime >= fDestroyTime) {
+               // Invoke("Escape", 5.0f);
+            }  
+            
+        }// 5초가 되면 5초뒤에 Escape라는 함수를 실행한다.
+        if (realEvent == 9) {
+            textbox2.text = "뛰어내리기";
+            fTickTime += Time.deltaTime;
+            if (fTickTime >= fDestroyTime)
+            {
+                cshTimerTrigger realEvent = GameObject.Find("genAccess").GetComponent<cshTimerTrigger>();
+            realEvent.realEvent = 10;
+            }// Text UI가 바뀌고 5초뒤에 genAccess의 timerTriger 스크립트의 realEvent 변수가 10으로 바뀐다. 
+
+        }
+        if (realEvent == 10) {
+
+           
+            fTickTime += Time.deltaTime;
+            if (fTickTime >= fDestroyTime*2)
+            {
+                textbox2.text = "구명보트 탑승";
+                cshMoveLimit realEvent = GameObject.Find("OVRPlayerController").GetComponent<cshMoveLimit>();
+                realEvent.realEvent = 101;
+
+            } // 10초뒤에 OVRPlayerController오브젝트의 cshMoveLimit 스크립트에서 realEvent 변수를 101로 변경
+            //  Invoke("Escape2", 5.0f); 
+           
+            //  Invoke("Escape4", 5.0f); 
+        }
+            if (realEvent == 11) {
+                fTickTime += Time.deltaTime;
+                if (fTickTime >= fDestroyTime)
+                {
+                    cshMoveLimit realEvent = GameObject.Find("OVRPlayerController").GetComponent<cshMoveLimit>();
+                    realEvent.realEvent = 104;
+                   // textbox2.text = "구명보트 탑승";
+                }
+            } // 
+            if (realEvent == 200)
+            {
+              textbox2.text = "축하합니다. 탈출하셨습니다."; 
+
+        }
+
+        }
+
+   
+    public GameObject cannonBall; //Player에서 발사할 weapon
+    public Transform spawnPoint; //weapon 발사 지점
+
+    public float speed = 0.1f;//Player의 이동 속도
+    public float moveableRange = 8f; // 이동 가능한 범위
+    public float power = 200f; // waapon 발사하는 힘
+
+
+
+
+    void Shoot()
+    {
+        //새 weapon을 생성하여 newBullet에 할당
+        GameObject newBullet = Instantiate(cannonBall, spawnPoint.position, Quaternion.identity) as GameObject;
+        //newBullet의 Rigidbody2D를 참조하여 AddForce 함수로 물리적으로 발사
+        newBullet.GetComponent<Rigidbody2D>().AddForce(Vector2.right * power);
+    }
+
+    private List<Collider> colliderList = new List<Collider>();
+
+    // Start is called before the first frame update
+
+    // Update is called once per frame
+
+    public List<Collider> colliders
+    {
+        get
+        {
+            if (0 < colliderList.Count)
+            {
+                //  현재 colliders 리스트에 객체중 null인 것은 제거하여 colliderList에 저장 후 반환
+                colliderList.RemoveAll(c => c == null);
+            }
+            return colliderList;
+        }
+
+    }
+    //SpawnObj함수는 ChickBallPrefab을 생성한다.
+    void SpawnObj()
+    {
+        float rnd = Random.Range(0.0f, 1.0f); //(0.0에서 5.0사이의 랜덤값을 생성)
+        float rnd2 = Random.Range(0.0f, 1.0f);
+
+        Vector3 pos = new Vector3(transform.position.x + rnd, transform.position.y, transform.position.z + rnd2);
+
+
+         
+         
+                for (float y = 0; y < 3 ; y++)
+                {
+                    Instantiate(obj, new Vector3(transform.position.x + y, transform.position.y, transform.position.z  ), transform.rotation);
+                   
+           }
+
+        Instantiate(obj2, new Vector3(-2.623f, 6.616f, 0.01f), transform.rotation);
+// for문으로 3번반복하게 한후 포지션x에 y를 더해주어 간격을 주는 프리팹 생성 함수를 만듦
+    }
+    void SpawnObj2()
+    {
+        float rnd = Random.Range(0.0f, 1.0f); //(0.0에서 5.0사이의 랜덤값을 생성)
+        float rnd2 = Random.Range(0.0f, 1.0f);
+
+        Vector3 pos = new Vector3(transform.position.x + rnd, transform.position.y, transform.position.z + rnd2);
+
+         
+                Instantiate(obj, new Vector3(-2.482f, 6.455f, 0.071f), transform.rotation);
+                Instantiate(obj2, new Vector3(-2.081f, 6.294f, 0.0f), transform.rotation);
+            
+ // 지정 벡터3 위치에 오브젝트를 생성한다.
+
+
+    }
+    void SpawnObj3()
+    {
+        float rnd = Random.Range(0.0f, 1.0f); //(0.0에서 5.0사이의 랜덤값을 생성)
+        float rnd2 = Random.Range(0.0f, 1.0f);
+
+        Vector3 pos = new Vector3(transform.position.x + rnd, transform.position.y, transform.position.z + rnd2);
+
+
+        Instantiate(obj3, new Vector3(-20.482f, 60.455f, 20.071f), transform.rotation);
+
+        realEvent = 8;
+    }// 지정 오브젝트에 프리팹을 생성한다.
+
+    void Escape()
+    {
+        cshTimerTrigger realEvent = GameObject.Find("genMask").GetComponent<cshTimerTrigger>();
+        fTickTime = 0;
+        realEvent.realEvent = 9;
+    }
+    void Escape2()
+    { 
+         fTickTime =0; 
+        cshTimerTrigger realEvent = GameObject.Find("OVRPlayerController").GetComponent<cshTimerTrigger>();
+        realEvent.realEvent = 10;
+        transform.Translate(Vector3.forward * speed * Time.deltaTime);
+        transform.Translate(Vector3.down * speed * Time.deltaTime);
+
+    } // 탈출슬라이드를 타고 아래로 이동하는 함수
+    void Escape3()
+    {
+        cshTimerTrigger realEvent = GameObject.Find("genMask").GetComponent<cshTimerTrigger>();
+        fTickTime = 0; realEvent.realEvent =8;
+    } 
+    void Escape4()
+    {
+        cshTimerTrigger realEvent = GameObject.Find("genAccess").GetComponent<cshTimerTrigger>();
+        realEvent.realEvent = 11;
+    }
+
+
+
+
+}
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+public class cshTimer : MonoBehaviour
+{
+
+    public Text textbox;
+    public float timestart;
+    float startTime;
+    TextMesh textMesh;
+
+//시간 text ui를 만들고 변수를 설정한다.
+    public static float timer = 60;
+
+    void Start()
+    {
+        textbox.text = timestart.ToString();
+      //  startTime = Time.time;
+      //  textMesh = this.gameObject.GetComponent<TextMesh>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        int M = (int)(timestart / 60);
+        //  float S = timestart % 60;
+        int S = (int)(timestart % 60);
+        //  Mathf.Round(timestart).ToString()
+        timestart += Time.deltaTime;
+        textbox.text = M + " : " + S;
+        
+//초를 60으로 나눈 나머지를 분으로 설정
+
+        for (int i = 1; i < 20; i++)
+        {
+            /* if (S == i)
+                 realEvent = i;*/
+
+        }
+       // float guiTime = timer - (Time.time - startTime);
+      //  if (guiTime > 0)
+     //   {
+       //     int minutes = (int)(guiTime / 60);
+       //     int seconds = (int)(guiTime % 60);
+       //     int fraction = (int)((guiTime * 100) % 100);
+
+           // textMesh.text = string.Format("{0:00}:{1:00}:{2:000}", minutes, seconds, fraction);
+        //}
+    }
+
+}
+
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement; //씬을 불러오기 위한 헤더
+
+public class cshsit : MonoBehaviour//, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
+{
+    private RectTransform rectTransform;
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            SceneManager.LoadScene("main");
+        }
+    }
+//D키를 누르면 main 씬으로 이동
+
+    private void Awake()
+    {
+
+        rectTransform = GetComponent<RectTransform>();
+
+    }
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        
+    }
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+
+    }
+    public void OnDrag(PointerEventData eventData)
+    {
+        rectTransform.anchoredPosition += eventData.delta;
+    }
+    public void OnEndDrag(PointerEventData eventData)
+    {
+
+    }
+   
+}
+
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class cshMoveLimit : MonoBehaviour
+{
+    public float speed = 3f;//Player의 이동 속도
+    public float moveableRange = 8f; // 이동 가능한 범위
+    public float power = 200f; // waapon 발사하는 힘
+    public float realEvent = 1;
+
+    public GameObject cannonBall; //Player에서 발사할 weapon
+    public Transform spawnPoint; //weapon 발사 지점
+                                 // Start is called before the first frame update
+
+    public Vector3 targetPosition;
+    private float fDestroyTime = 5f; private float fTickTime;
+
+
+   
+     
+void Start()
+    {
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (realEvent == 101)
+        {
+            //  transform.position = new Vector3(-3.99f, 6.55f, -3.31f); 
+            // transform.position = new Vector3(transform.position.x-1f, transform.position.y, transform.position.z);
+             //지정 포지션에 위치하게 한다.
+            realEvent = 102;
+
+        }
+        if (realEvent == 102)
+        {
+//함수 실행, 5초뒤 변수 변경
+            Invoke("Escape4", 0.1f);
+            fTickTime += Time.deltaTime;
+            if (fTickTime >= fDestroyTime)
+            {
+                realEvent = 103;
+            }
+        }
+
+        if (realEvent == 1)
+        {
+            // transform.position = new Vector3(Mathf.Clamp(transform.position.x, -10f, 10f), 0, 0);
+            if (transform.position.x > -0.46) transform.position = new Vector3(-0.46f, transform.position.y, transform.position.z);
+            if (transform.position.x < -3.24)
+                transform.position = new Vector3(-3.24f, transform.position.y, transform.position.z);
+
+            if (transform.position.z > 1.5)
+                transform.position = new Vector3(transform.position.x, transform.position.y, 1.5f);
+            if (transform.position.z < -4.41)
+                transform.position = new Vector3(transform.position.x, transform.position.y, -4.41f);
+
+            /*if (transform.position.z > 10)
+                transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+            if (transform.position.z < -2)
+                transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z);*/
+
+
+//플레이어가 지정한 위치 밖으로 빠져나가지 못하게 한다.
+        }
+        if (realEvent == 104)
+        {
+            //  transform.position = new Vector3(-3.99f, 6.55f, -3.31f); 
+            // transform.position = new Vector3(transform.position.x-1f, transform.position.y, transform.position.z);
+
+            //  transform.position = new Vector3(-3.99f, 6.55f, -3.31f);
+            Invoke("Escape5", 5f);
+            fTickTime += Time.deltaTime;
+            if (fTickTime >= fDestroyTime)
+            {
+                realEvent = 103;
+            }
+
+        }
+    }
+//5초 뒤 함수 실행
+    void Escape3()
+    {
+
+      //  transform.position = new Vector3(-3.99f, 6.55f, -3.31f);
+        
+
+    }
+    void Escape4()
+    {
+        /* cshTimerTrigger realEvent = GameObject.Find("genAccess").GetComponent<cshTimerTrigger>();
+         realEvent.realEvent = 11;*/
+      
+        //transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+        transform.Translate(Vector3.forward * speed * Time.deltaTime * 10);
+        transform.Translate(Vector3.down * speed * Time.deltaTime * 10);
+        fTickTime += Time.deltaTime;
+        if (fTickTime >= fDestroyTime)
+        {
+           
+            cshTimerTrigger realEvent = GameObject.Find("genAccess").GetComponent<cshTimerTrigger>();
+            realEvent.realEvent = 11;
+            
+        }
+// 탈출슬라이드를 타고 아래로 이동하는 함수
+
+
+
+    }
+    void Escape5()
+    {
+        transform.position = new Vector3(-21.76f, 6.06f, -10.59f);
+        transform.Rotate(0f, 1f, 0.0f, Space.World);
+        cshTimerTrigger realEvent = GameObject.Find("genAccess").GetComponent<cshTimerTrigger>();
+        realEvent.realEvent = 200;
+    }
+
+
+//마지막 종료
+
+
+}
+
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+public class cshescape : MonoBehaviour
+{
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("ct"))
+        {
+            cshTimerTrigger realEvent = GameObject.Find("genAccess").GetComponent<cshTimerTrigger>();
+            realEvent.realEvent = 9; Destroy(other.gameObject);
+
+
+        }
+
+        if (other.CompareTag("escape"))
+        {
+            cshTimerTrigger realEvent = GameObject.Find("genAccess").GetComponent<cshTimerTrigger>();
+            realEvent.realEvent = 10; Destroy(other.gameObject);
+
+
+        }
+    }
+
+}
+
+
+
